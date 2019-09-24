@@ -106,6 +106,7 @@ public class UserInterface extends javax.swing.JFrame {
 
         ResetButton.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         ResetButton.setText("RESET");
+        ResetButton.setFocusable(false);
         ResetButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 ResetButtonActionPerformed(evt);
@@ -117,6 +118,7 @@ public class UserInterface extends javax.swing.JFrame {
 
         OptimalScoreTextField.setEditable(false);
         OptimalScoreTextField.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        OptimalScoreTextField.setFocusable(false);
 
         OptimalString1Label.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         OptimalString1Label.setText("Optimal String 1:");
@@ -124,7 +126,7 @@ public class UserInterface extends javax.swing.JFrame {
         OptimalString1TextField.setEditable(false);
         OptimalString1TextField.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         OptimalString1TextField.setToolTipText("Enter a string of characters");
-        OptimalString1TextField.setNextFocusableComponent(String2TextField);
+        OptimalString1TextField.setFocusable(false);
 
         OptimalString2Label.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         OptimalString2Label.setText("Optimal String 2:");
@@ -132,7 +134,7 @@ public class UserInterface extends javax.swing.JFrame {
         OptimalString2TextField.setEditable(false);
         OptimalString2TextField.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         OptimalString2TextField.setToolTipText("Enter a string of characters");
-        OptimalString2TextField.setNextFocusableComponent(SubmitButton);
+        OptimalString2TextField.setFocusable(false);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -246,7 +248,17 @@ public class UserInterface extends javax.swing.JFrame {
     }//GEN-LAST:event_GapValueTextFieldActionPerformed
 
     private void ResetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ResetButtonActionPerformed
-        // TODO add your handling code here:
+        // Clear all text fields and set focus at MatchValueTextField
+       
+        MatchValueTextField.setText("");
+        MismatchValueTextField.setText("");
+        GapValueTextField.setText("");
+        String1TextField.setText("");
+        String2TextField.setText("");
+        OptimalScoreTextField.setText("");
+        OptimalString1TextField.setText("");
+        OptimalString2TextField.setText("");
+        MatchValueTextField.requestFocus();
     }//GEN-LAST:event_ResetButtonActionPerformed
 
     /**
