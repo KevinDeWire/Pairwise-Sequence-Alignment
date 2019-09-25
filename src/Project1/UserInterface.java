@@ -103,6 +103,11 @@ public class UserInterface extends javax.swing.JFrame {
         SubmitButton.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         SubmitButton.setText("SUBMIT");
         SubmitButton.setNextFocusableComponent(MatchValueTextField);
+        SubmitButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                SubmitButtonActionPerformed(evt);
+            }
+        });
 
         ResetButton.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         ResetButton.setText("RESET");
@@ -261,6 +266,104 @@ public class UserInterface extends javax.swing.JFrame {
         MatchValueTextField.requestFocus();
     }//GEN-LAST:event_ResetButtonActionPerformed
 
+    private void SubmitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SubmitButtonActionPerformed
+        // Pull the values from the text fields and proccess them.
+        
+        // Set up variables
+        int MatchValue = Integer.parseInt(MatchValueTextField.getText());
+        int MismatchValue = Integer.parseInt(MismatchValueTextField.getText());
+        int GapValue = Integer.parseInt(GapValueTextField.getText());
+        String String1 = String1TextField.getText();
+        String String2 = String2TextField.getText();
+        int OptimalScore;
+        String OptimalString1;
+        String OptimalString2;
+        SCORE = new int[String1.length()+1][String2.length()+1];
+        DIRECTION = new char[String1.length()+1][String2.length()+1];
+        
+        // Create the tables
+        InitScore(GapValue, String1.length(), String2.length());
+        CalcScore(MatchValue, MismatchValue, GapValue, String1.length(), String2.length(), String1, String2);
+        
+        // Assign values
+        OptimalScore = SCORE[String1.length()][String2.length()];
+        
+        // Test section
+        OptimalString1 = String2;
+        OptimalString2 = String1;
+        for (int j=0; j<=String2.length(); j++){
+            for (int i=0; i<=String1.length(); i++){
+                System.out.print(SCORE[i][j]);
+            }
+            System.out.println();
+        }
+        
+        // Output
+        OptimalScoreTextField.setText(String.valueOf(OptimalScore));
+        OptimalString1TextField.setText(OptimalString1);
+        OptimalString2TextField.setText(OptimalString2);
+        
+        
+    }//GEN-LAST:event_SubmitButtonActionPerformed
+
+    private void InitScore(int Gap, int X, int Y){
+        SCORE[0][0]=0;
+        
+        for (int i=1; i<=X; i++){
+            SCORE[i][0] = SCORE[i-1][0] + Gap;
+        }
+        
+        for (int j=1; j<=Y; j++){
+            SCORE[0][j] = SCORE[0][j-1] + Gap;
+        }
+    }
+    
+    private void CalcScore(int Match, int Miss, int Gap, int X, int Y, String stringX, String stringY){
+        int diag;
+        int up;
+        int left;
+        for (int j=1; j<=Y; j++){
+            for (int i=1; i<=X; i++){
+                diag = Diag(Match, Miss, i, j, stringX, stringY);
+                up = Up(Gap, i, j);
+                left = Left(Gap, i, j);
+                if (diag >= up && diag >= left){
+                    SCORE[i][j] = diag;
+                }
+                else if(up >= left){
+                    SCORE[i][j] = up;
+                }
+                else {
+                    SCORE[i][j] = left;
+                }
+            }
+        }
+       
+    }
+    
+    private int Diag(int Match, int Miss, int i, int j, String stringX, String stringY){
+        int diag;
+        int score;
+        if (stringX.charAt(i-1) == stringY.charAt(j-1)){
+            score = Match;
+        }       
+        else score = Miss;
+        diag = SCORE[i-1][j-1] + score;
+        return diag;
+    }
+    
+    private int Up(int Gap, int i, int j){
+        int up;
+        up = SCORE[i][j-1] + Gap;
+        return up;
+    }
+    
+    private int Left(int Gap, int i, int j){
+        int left;
+        left = SCORE[i-1][j] + Gap;
+        return left;
+    }
+    
     /**
      * @param args the command line arguments
      */
@@ -316,4 +419,9 @@ public class UserInterface extends javax.swing.JFrame {
     private javax.swing.JTextField String2TextField;
     private javax.swing.JButton SubmitButton;
     // End of variables declaration//GEN-END:variables
+
+    // More variables for the required tables
+    int[][] SCORE;
+    char[][] DIRECTION;
+    // End of table declarations
 }
