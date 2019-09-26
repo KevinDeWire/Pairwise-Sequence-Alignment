@@ -9,12 +9,12 @@ package Project1;
  *
  * @author kevin
  */
-public class UserInterface extends javax.swing.JFrame {
+public class PairwiseSequenceAlignment extends javax.swing.JFrame {
 
     /**
      * Creates new form UserInterface
      */
-    public UserInterface() {
+    public PairwiseSequenceAlignment() {
         initComponents();
     }
 
@@ -89,14 +89,14 @@ public class UserInterface extends javax.swing.JFrame {
         String1Label.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         String1Label.setText("String 1:");
 
-        String1TextField.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        String1TextField.setFont(new java.awt.Font("Lucida Console", 0, 18)); // NOI18N
         String1TextField.setToolTipText("Enter a string of characters");
         String1TextField.setNextFocusableComponent(String2TextField);
 
         String2Label.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         String2Label.setText("String 2:");
 
-        String2TextField.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        String2TextField.setFont(new java.awt.Font("Lucida Console", 0, 18)); // NOI18N
         String2TextField.setToolTipText("Enter a string of characters");
         String2TextField.setNextFocusableComponent(SubmitButton);
 
@@ -129,7 +129,7 @@ public class UserInterface extends javax.swing.JFrame {
         OptimalString1Label.setText("Optimal String 1:");
 
         OptimalString1TextField.setEditable(false);
-        OptimalString1TextField.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        OptimalString1TextField.setFont(new java.awt.Font("Lucida Console", 0, 18)); // NOI18N
         OptimalString1TextField.setToolTipText("Enter a string of characters");
         OptimalString1TextField.setFocusable(false);
 
@@ -137,7 +137,7 @@ public class UserInterface extends javax.swing.JFrame {
         OptimalString2Label.setText("Optimal String 2:");
 
         OptimalString2TextField.setEditable(false);
-        OptimalString2TextField.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        OptimalString2TextField.setFont(new java.awt.Font("Lucida Console", 0, 18)); // NOI18N
         OptimalString2TextField.setToolTipText("Enter a string of characters");
         OptimalString2TextField.setFocusable(false);
 
@@ -276,23 +276,29 @@ public class UserInterface extends javax.swing.JFrame {
         String String1 = String1TextField.getText();
         String String2 = String2TextField.getText();
         int OptimalScore;
-        String OptimalString1;
-        String OptimalString2;
-        SCORE = new int[String1.length()+1][String2.length()+1];
-        DIRECTION = new char[String1.length()+1][String2.length()+1];
+        String OptimalString1 = "";
+        String OptimalString2 = "";
+        int X = String1.length();
+        int Y = String2.length();
+        SCORE = new int[X+1][Y+1];
+        DIRECTION = new char[X+1][Y+1];
         
         // Create the tables
-        InitScore(GapValue, String1.length(), String2.length());
-        CalcScore(MatchValue, MismatchValue, GapValue, String1.length(), String2.length(), String1, String2);
+        InitScore(GapValue, X, Y);
+        CalcScore(MatchValue, MismatchValue, GapValue, X, Y, String1, String2);
         
         // Assign values
-        OptimalScore = SCORE[String1.length()][String2.length()];
+        OptimalScore = SCORE[X][Y];
+        
+        // Get Optimal Strings
+        OptimalString1 = PrintOptimalX(String1, OptimalString1, X, Y);
+        OptimalString2 = PrintOptimalY(String2, OptimalString2, X, Y);
         
         // Test section
-        OptimalString1 = String2;
-        OptimalString2 = String1;
-        for (int j=0; j<=String2.length(); j++){
-            for (int i=0; i<=String1.length(); i++){
+        //OptimalString1 = String2;
+        //OptimalString2 = String1;
+        for (int j=0; j<=Y; j++){
+            for (int i=0; i<=X; i++){
                 System.out.print(SCORE[i][j]);
             }
             System.out.println();
@@ -329,12 +335,15 @@ public class UserInterface extends javax.swing.JFrame {
                 left = Left(Gap, i, j);
                 if (diag >= up && diag >= left){
                     SCORE[i][j] = diag;
+                    DIRECTION[i][j]='D';
                 }
                 else if(up >= left){
                     SCORE[i][j] = up;
+                    DIRECTION[i][j]='U';
                 }
                 else {
                     SCORE[i][j] = left;
+                    DIRECTION[i][j]='L';
                 }
             }
         }
@@ -364,6 +373,44 @@ public class UserInterface extends javax.swing.JFrame {
         return left;
     }
     
+    private String PrintOptimalX(String StringX, String OptimalX, int i, int j){
+        if (i == 0 &&  j == 0){
+            return OptimalX;
+        }
+        if (DIRECTION[i][j]=='D'){
+            OptimalX = PrintOptimalX(StringX, OptimalX, i-1, j-1);
+            OptimalX = OptimalX + StringX.charAt(i-1);
+        }
+        else if (DIRECTION[i][j]=='L' || j == 0){
+            OptimalX = PrintOptimalX(StringX, OptimalX, i-1, j);
+            OptimalX = OptimalX + StringX.charAt(i-1);
+        }
+        else{
+            OptimalX = PrintOptimalX(StringX, OptimalX, i, j-1);
+            OptimalX = OptimalX + '-';
+        }
+        return OptimalX;
+    }
+    
+    private String PrintOptimalY(String StringY, String OptimalY, int i, int j){
+        if (i == 0 &&  j == 0){
+            return OptimalY;
+        }
+        if (DIRECTION[i][j]=='D'){
+            OptimalY = PrintOptimalY(StringY, OptimalY, i-1, j-1);
+            OptimalY = OptimalY + StringY.charAt(j-1);
+        }
+        else if (DIRECTION[i][j]=='U' || i == 0){
+            OptimalY = PrintOptimalY(StringY, OptimalY, i, j-1);
+            OptimalY = OptimalY + StringY.charAt(j-1);
+        }
+        else {
+                OptimalY = PrintOptimalY(StringY, OptimalY, i-1, j);
+                OptimalY = OptimalY + '-';
+        }
+        return OptimalY;
+    }
+    
     /**
      * @param args the command line arguments
      */
@@ -381,20 +428,21 @@ public class UserInterface extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(UserInterface.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(PairwiseSequenceAlignment.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(UserInterface.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(PairwiseSequenceAlignment.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(UserInterface.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(PairwiseSequenceAlignment.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(UserInterface.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(PairwiseSequenceAlignment.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new UserInterface().setVisible(true);
+                new PairwiseSequenceAlignment().setVisible(true);
             }
         });
     }
